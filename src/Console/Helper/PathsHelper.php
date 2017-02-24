@@ -232,6 +232,21 @@ class PathsHelper extends Helper
     }
 
     /**
+     * This method can be used to calculate the relative path between a path and the grumphp.yml config path.
+     *
+     * @param string $path
+     * @param null|string $configPath
+     *
+     * @return string
+     */
+    public function getRelativeConfigPath($path, $configPath = null)
+    {
+        $configPath = $configPath === null ? $this->getDefaultConfigPath() : $configPath;
+
+        return $this->makePathRelative($path, dirname($configPath));
+    }
+
+    /**
      * This method will return a relative path to a file of directory if it lives in the current project.
      * When the file is not located in the current project, the absolute path to the file is returned.
      *

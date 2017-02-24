@@ -157,13 +157,13 @@ class ConfigureCommand extends Command
         $tasks = $helper->ask($input, $output, $question);
 
         // Make sure the paths are relative to the configuration destination path:
-        $configPath = dirname($this->input->getOption('config'));
+        $configPath = $this->input->getOption('config');
 
         // Build configuration
         return [
             'parameters' => [
-                'git_dir' => $this->paths()->makePathRelative($gitDir, $configPath),
-                'bin_dir' => $this->paths()->makePathRelative($binDir, $configPath),
+                'git_dir' => $this->paths()->getRelativeConfigPath($gitDir, $configPath),
+                'bin_dir' => $this->paths()->getRelativeConfigPath($binDir, $configPath),
                 'tasks' => array_map(function ($task) {
                     return null;
                 }, array_flip($tasks)),
