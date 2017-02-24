@@ -157,7 +157,7 @@ class ConfigureCommand extends Command
         $tasks = $helper->ask($input, $output, $question);
 
         // Make sure the paths are relative to the configuration destination path:
-        $configPath = $this->input->getOption('config');
+        $configPath = dirname($this->input->getOption('config'));
 
         // Build configuration
         return [
