@@ -4,10 +4,11 @@ namespace GrumPHP\Console\Command;
 
 use Composer\Config;
 use Exception;
-use Gitonomy\Git\Repository;
+use GrumPHP\Collection\ProcessArgumentsCollection;
 use GrumPHP\Configuration\GrumPHP;
 use GrumPHP\Console\Helper\ComposerHelper;
 use GrumPHP\Console\Helper\PathsHelper;
+use GrumPHP\Process\ProcessBuilder;
 use GrumPHP\Util\Filesystem;
 use RuntimeException;
 use Symfony\Component\Console\Command\Command;
@@ -35,9 +36,9 @@ class ConfigureCommand extends Command
     protected $filesystem;
 
     /**
-     * @var Repository
+     * @var ProcessBuilder
      */
-    protected $repository;
+    private $processBuilder;
 
     /**
      * @var InputInterface
@@ -45,17 +46,17 @@ class ConfigureCommand extends Command
     protected $input;
 
     /**
-     * @param GrumPHP    $config
-     * @param Filesystem $filesystem
-     * @param Repository $repository
+     * @param GrumPHP        $config
+     * @param Filesystem     $filesystem
+     * @param ProcessBuilder $processBuilder
      */
-    public function __construct(GrumPHP $config, Filesystem $filesystem, Repository $repository)
+    public function __construct(GrumPHP $config, Filesystem $filesystem, ProcessBuilder $processBuilder)
     {
         parent::__construct();
 
         $this->config = $config;
         $this->filesystem = $filesystem;
-        $this->repository = $repository;
+        $this->processBuilder = $processBuilder;
     }
 
     /**
@@ -155,11 +156,14 @@ class ConfigureCommand extends Command
         $question->setMultiselect(true);
         $tasks = $helper->ask($input, $output, $question);
 
+        // Make sure the paths are relative to the configuration destination path:
+        $configPath = $this->input->getOption('config');
+
         // Build configuration
         return [
             'parameters' => [
-                'git_dir' => $gitDir,
-                'bin_dir' => $binDir,
+                'git_dir' => $this->paths()->makePathRelative($gitDir, $configPath),
+                'bin_dir' => $this->paths()->makePathRelative($binDir, $configPath),
                 'tasks' => array_map(function ($task) {
                     return null;
                 }, array_flip($tasks)),
@@ -227,11 +231,24 @@ class ConfigureCommand extends Command
     protected function guessGitDir()
     {
         $defaultGitDir = $this->config->getGitDir();
+
         try {
-            $topLevel = $this->repository->run('rev-parse', ['--show-toplevel']);
-        } catch (Exception $e) {
+            $process = $this->processBuilder->buildProcess(
+                ProcessArgumentsCollection::forExecutable('git')
+                    ->add('rev-parse')
+                    ->add('--show-toplevel')
+            );
+
+            $process->run();
+        } catch (\Exception $e) {
             return $defaultGitDir;
         }
+
+        if (!$process->isSuccessful()) {
+            return $this->config->getGitDir();
+        }
+
+        $topLevel = $process->getOutput();
 
         return rtrim($this->paths()->getRelativePath($topLevel), '/');
     }

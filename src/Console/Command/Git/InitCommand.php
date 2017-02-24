@@ -4,7 +4,6 @@ namespace GrumPHP\Console\Command\Git;
 
 use GrumPHP\Configuration\GrumPHP;
 use GrumPHP\Console\Helper\PathsHelper;
-use GrumPHP\Exception\FileNotFoundException;
 use GrumPHP\Util\Filesystem;
 use RuntimeException;
 use SplFileInfo;
