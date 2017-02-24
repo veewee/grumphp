@@ -25,6 +25,10 @@ class GrumPHPPlugin implements PluginInterface, EventSubscriberInterface
 {
     const PACKAGE_NAME = 'phpro/grumphp';
 
+    const COMMAND_INIT = InitCommand::COMMAND_NAME;
+    const COMMAND_DEINIT = DeInitCommand::COMMAND_NAME;
+    const COMMAND_CONFIGURE = ConfigureCommand::COMMAND_NAME;
+
     /**
      * @var Composer
      */
@@ -134,7 +138,7 @@ class GrumPHPPlugin implements PluginInterface, EventSubscriberInterface
     public function runScheduledTasks(Event $event)
     {
         if ($this->initScheduled) {
-            $this->runGrumPhpCommand(ConfigureCommand::COMMAND_NAME);
+            $this->runGrumPhpCommand(self::COMMAND_CONFIGURE);
         }
         if ($this->initScheduled) {
             $this->initGitHook();
@@ -156,7 +160,7 @@ class GrumPHPPlugin implements PluginInterface, EventSubscriberInterface
      */
     protected function initGitHook()
     {
-        $this->runGrumPhpCommand(InitCommand::COMMAND_NAME);
+        $this->runGrumPhpCommand(self::COMMAND_INIT);
     }
 
     /**
@@ -164,7 +168,7 @@ class GrumPHPPlugin implements PluginInterface, EventSubscriberInterface
      */
     protected function deInitGitHook()
     {
-        $this->runGrumPhpCommand(DeInitCommand::COMMAND_NAME);
+        $this->runGrumPhpCommand(self::COMMAND_DEINIT);
     }
 
     /**
