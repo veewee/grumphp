@@ -14,9 +14,6 @@ use Composer\Package\PackageInterface;
 use Composer\Plugin\PluginInterface;
 use Composer\Script\Event;
 use Composer\Script\ScriptEvents;
-use GrumPHP\Console\Command\ConfigureCommand;
-use GrumPHP\Console\Command\Git\DeInitCommand;
-use GrumPHP\Console\Command\Git\InitCommand;
 use GrumPHP\Locator\ExternalCommand;
 use Symfony\Component\Process\ExecutableFinder;
 use Symfony\Component\Process\ProcessBuilder;
@@ -25,9 +22,9 @@ class GrumPHPPlugin implements PluginInterface, EventSubscriberInterface
 {
     const PACKAGE_NAME = 'phpro/grumphp';
 
-    const COMMAND_INIT = InitCommand::COMMAND_NAME;
-    const COMMAND_DEINIT = DeInitCommand::COMMAND_NAME;
-    const COMMAND_CONFIGURE = ConfigureCommand::COMMAND_NAME;
+    const COMMAND_INIT = 'git:init';
+    const COMMAND_DEINIT = 'git:deinit';
+    const COMMAND_CONFIGURE = 'configure';
 
     /**
      * @var Composer
@@ -152,7 +149,7 @@ class GrumPHPPlugin implements PluginInterface, EventSubscriberInterface
      */
     protected function guardIsGrumPhpPackage(PackageInterface $package)
     {
-        return $package->getName() == self::PACKAGE_NAME;
+        return $package->getName() === self::PACKAGE_NAME;
     }
 
     /**
