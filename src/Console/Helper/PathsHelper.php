@@ -206,20 +206,6 @@ class PathsHelper extends Helper
     }
 
     /**
-     * @param $endPath
-     * @param $startPath
-     *
-     * @return string
-     */
-    public function makePathRelative($endPath, $startPath)
-    {
-        return $this->fileSystem->makePathRelative(
-            $this->getAbsolutePath($endPath),
-            $this->getAbsolutePath($startPath)
-        );
-    }
-
-    /**
      * @param $path
      *
      * @return string
@@ -243,7 +229,7 @@ class PathsHelper extends Helper
     {
         $configPath = $configPath === null ? $this->getDefaultConfigPath() : $configPath;
 
-        return $this->makePathRelative($path, dirname($configPath));
+        return $this->fileSystem->makePathRelative($path, dirname($configPath));
     }
 
     /**
