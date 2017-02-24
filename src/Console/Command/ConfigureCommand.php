@@ -233,12 +233,11 @@ class ConfigureCommand extends Command
         $defaultGitDir = $this->config->getGitDir();
 
         try {
-            $process = $this->processBuilder->buildProcess(
-                ProcessArgumentsCollection::forExecutable('git')
-                    ->add('rev-parse')
-                    ->add('--show-toplevel')
-            );
+            $arguments = ProcessArgumentsCollection::forExecutable('git');
+            $arguments->add('rev-parse');
+            $arguments->add('--show-toplevel');
 
+            $process = $this->processBuilder->buildProcess($arguments);
             $process->run();
         } catch (\Exception $e) {
             return $defaultGitDir;
