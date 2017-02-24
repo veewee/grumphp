@@ -29,9 +29,10 @@ services:
 
     git.repository:
         class: Gitonomy\Git\Repository
+        factory: ['GrumPHP\Factory\GitRepository', 'factory']
         arguments:
-          - '%git_dir%'
-          - { logger: '@grumphp.logger' }
+          - '@locator.git_top_level'
+          - '@grumphp.logger'
 
     task_runner:
         class: GrumPHP\Runner\TaskRunner
