@@ -6,6 +6,7 @@ use GrumPHP\Configuration\GrumPHP;
 use GrumPHP\Exception\RuntimeException;
 use GrumPHP\Exception\FileNotFoundException;
 use GrumPHP\Locator\ExternalCommand;
+use GrumPHP\Locator\GitTopLevelLocator;
 use GrumPHP\Util\Filesystem;
 use SplFileInfo;
 use Symfony\Component\Console\Helper\Helper;
@@ -33,26 +34,34 @@ class PathsHelper extends Helper
     private $externalCommandLocator;
 
     /**
+     * @var GitTopLevelLocator
+     */
+    private $gitTopLevelLocator;
+
+    /**
      * @var string
      */
     private $defaultConfigPath;
 
     /**
-     * @param GrumPHP         $config
-     * @param Filesystem      $fileSystem
-     * @param ExternalCommand $externalCommandLocator
-     * @param string          $defaultConfigPath
+     * @param GrumPHP            $config
+     * @param Filesystem         $fileSystem
+     * @param ExternalCommand    $externalCommandLocator
+     * @param GitTopLevelLocator $gitTopLevelLocator
+     * @param string             $defaultConfigPath
      */
     public function __construct(
         GrumPHP $config,
         Filesystem $fileSystem,
         ExternalCommand $externalCommandLocator,
+        GitTopLevelLocator $gitTopLevelLocator,
         $defaultConfigPath
     ) {
         $this->config = $config;
         $this->fileSystem = $fileSystem;
         $this->externalCommandLocator = $externalCommandLocator;
         $this->defaultConfigPath = $defaultConfigPath;
+        $this->gitTopLevelLocator = $gitTopLevelLocator;
     }
 
     /**
@@ -133,15 +142,11 @@ class PathsHelper extends Helper
      * Find the relative git directory
      *
      * @return string
+     * @throws \GrumPHP\Exception\GitException
      */
     public function getGitDir()
     {
-        $gitDir = $this->config->getGitDir();
-        if (!$this->fileSystem->exists($gitDir)) {
-            throw new RuntimeException('The configured GIT directory could not be found.');
-        }
-
-        return $this->getRelativePath($gitDir);
+        return $this->gitTopLevelLocator->locate();
     }
 
     /**
@@ -151,9 +156,7 @@ class PathsHelper extends Helper
      */
     public function getGitHookExecutionPath()
     {
-        $gitPath = $this->getGitDir();
-
-        return $this->fileSystem->makePathRelative($this->getWorkingDir(), $this->getAbsolutePath($gitPath));
+        return $this->fileSystem->makePathRelative($this->getWorkingDir(), $this->getGitDir());
     }
 
     /**
@@ -163,7 +166,7 @@ class PathsHelper extends Helper
      */
     public function getGitHooksDir()
     {
-        return $this->getGitDir() . '.git/hooks/';
+        return $this->getGitDir() . DIRECTORY_SEPARATOR . '.git/hooks/';
     }
 
     /**
@@ -229,7 +232,10 @@ class PathsHelper extends Helper
     {
         $configPath = $configPath === null ? $this->getDefaultConfigPath() : $configPath;
 
-        return $this->fileSystem->makePathRelative($path, dirname($configPath));
+        return $this->fileSystem->makePathRelative(
+            $this->getAbsolutePath($path),
+            $this->getAbsolutePath(dirname($configPath))
+        );
     }
 
     /**

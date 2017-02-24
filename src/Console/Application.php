@@ -84,8 +84,7 @@ class Application extends SymfonyConsole
 
         $commands[] = new Command\ConfigureCommand(
             $container->get('config'),
-            $container->get('grumphp.util.filesystem'),
-            $container->get('process_builder')
+            $container->get('grumphp.util.filesystem')
         );
         $commands[] = new Command\RunCommand(
             $container->get('config'),
@@ -124,6 +123,7 @@ class Application extends SymfonyConsole
             $container->get('config'),
             $container->get('grumphp.util.filesystem'),
             $container->get('locator.external_command'),
+            $container->get('locator.git_top_level'),
             $this->getDefaultConfigPath()
         ));
         $helperSet->set(new Helper\TaskRunnerHelper(

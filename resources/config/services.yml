@@ -56,6 +56,11 @@ services:
           - '@git.repository'
           - '@filesystem'
 
+    locator.git_top_level:
+        class: GrumPHP\Locator\GitTopLevelLocator
+        arguments:
+          - '@process_builder'
+
     locator.registered_files:
         class: GrumPHP\Locator\RegisteredFiles
         arguments:

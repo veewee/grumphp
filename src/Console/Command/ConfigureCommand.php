@@ -4,7 +4,6 @@ namespace GrumPHP\Console\Command;
 
 use Composer\Config;
 use Exception;
-use GrumPHP\Collection\ProcessArgumentsCollection;
 use GrumPHP\Configuration\GrumPHP;
 use GrumPHP\Console\Helper\ComposerHelper;
 use GrumPHP\Console\Helper\PathsHelper;
@@ -46,17 +45,15 @@ class ConfigureCommand extends Command
     protected $input;
 
     /**
-     * @param GrumPHP        $config
-     * @param Filesystem     $filesystem
-     * @param ProcessBuilder $processBuilder
+     * @param GrumPHP            $config
+     * @param Filesystem         $filesystem
      */
-    public function __construct(GrumPHP $config, Filesystem $filesystem, ProcessBuilder $processBuilder)
+    public function __construct(GrumPHP $config, Filesystem $filesystem)
     {
         parent::__construct();
 
         $this->config = $config;
         $this->filesystem = $filesystem;
-        $this->processBuilder = $processBuilder;
     }
 
     /**
@@ -133,13 +130,6 @@ class ConfigureCommand extends Command
             return [];
         }
 
-        // Search for git_dir
-        $default = $this->guessGitDir();
-        $questionString = $this->createQuestionString('In which folder is GIT initialized?', $default);
-        $question = new Question($questionString, $default);
-        $question->setValidator([$this, 'pathValidator']);
-        $gitDir = $helper->ask($input, $output, $question);
-
         // Search for bin_dir
         $default = $this->guessBinDir();
         $questionString = $this->createQuestionString('Where can we find the executables?', $default);
@@ -162,11 +152,8 @@ class ConfigureCommand extends Command
         // Build configuration
         return [
             'parameters' => [
-                'git_dir' => $this->paths()->getRelativeConfigPath($gitDir, $configPath),
                 'bin_dir' => $this->paths()->getRelativeConfigPath($binDir, $configPath),
-                'tasks' => array_map(function ($task) {
-                    return null;
-                }, array_flip($tasks)),
+                'tasks' => array_fill_keys($tasks, null)
             ]
         ];
     }
@@ -223,33 +210,6 @@ class ConfigureCommand extends Command
         }
 
         return $config->get('bin-dir', Config::RELATIVE_PATHS);
-    }
-
-    /**
-     * @return string
-     */
-    protected function guessGitDir()
-    {
-        $defaultGitDir = $this->config->getGitDir();
-
-        try {
-            $arguments = ProcessArgumentsCollection::forExecutable('git');
-            $arguments->add('rev-parse');
-            $arguments->add('--show-toplevel');
-
-            $process = $this->processBuilder->buildProcess($arguments);
-            $process->run();
-        } catch (\Exception $e) {
-            return $defaultGitDir;
-        }
-
-        if (!$process->isSuccessful()) {
-            return $this->config->getGitDir();
-        }
-
-        $topLevel = $process->getOutput();
-
-        return rtrim($this->paths()->getRelativePath($topLevel), '/');
     }
 
     /**

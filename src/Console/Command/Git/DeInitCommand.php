@@ -62,7 +62,7 @@ class DeInitCommand extends Command
      */
     public function execute(InputInterface $input, OutputInterface $output)
     {
-        $gitHooksPath = $this->paths()->getRelativeConfigPath($this->paths()->getGitHooksDir());
+        $gitHooksPath = $this->paths()->getGitHooksDir();
 
         foreach (InitCommand::$hooks as $hook) {
             $hookPath = $gitHooksPath . $hook;

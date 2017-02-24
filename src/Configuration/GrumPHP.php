@@ -35,14 +35,6 @@ class GrumPHP
     /**
      * @return string
      */
-    public function getGitDir()
-    {
-        return $this->container->getParameter('git_dir');
-    }
-
-    /**
-     * @return string
-     */
     public function getHooksDir()
     {
         return $this->container->getParameter('hooks_dir');
