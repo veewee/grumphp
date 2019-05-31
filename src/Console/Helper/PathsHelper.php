@@ -107,10 +107,13 @@ class PathsHelper extends Helper
     /**
      * This is the directory in which the cli script is initialized.
      * Normally this should be the directory where the composer.json file is located.
+     *
+     * @deprecated use Filesystem::getWorkingDir() instead
+     * @see Filesystem::getWorkingDir()
      */
     public function getWorkingDir(): string
     {
-        return getcwd();
+        return $this->fileSystem->getWorkingDir();
     }
 
     /**

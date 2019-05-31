@@ -62,6 +62,7 @@ services:
         arguments:
           - '@git.repository'
           - '@filesystem'
+          - '@config'
         public: true
 
     locator.registered_files:
