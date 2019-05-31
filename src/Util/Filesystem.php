@@ -31,19 +31,21 @@ class Filesystem extends SymfonyFilesystem
         return $content;
     }
 
-    public function getWorkingDir(): string
+    public function getProjectDir(): string
     {
-        return getcwd();
+        return dirname($this->config->getConfigFile());
     }
 
-    public function getRelativeWorkingDirInGitDir(): string
+    public function getGitDir(): string
     {
-        return $this->makePathRelative($this->getWorkingDir(), $this->config->getGitDir());
-
+        return realpath($this->config->getGitDir());
     }
 
-    public function getRelativeGitDir(): string
+    public function getRelativeProjectDir(): string
     {
-        return $this->makePathRelative($this->getWorkingDir(), realpath($this->config->getGitDir()));
+        return rtrim('/', $this->makePathRelative(
+            $this->getProjectDir(),
+            $this->getGitDir()
+        ));
     }
 }

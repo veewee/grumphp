@@ -26,16 +26,10 @@ class ChangedFiles
      */
     private $filesystem;
 
-    /**
-     * @var GrumPHP
-     */
-    private $config;
-
-    public function __construct(Repository $repository, Filesystem $filesystem, GrumPHP $config)
+    public function __construct(Repository $repository, Filesystem $filesystem)
     {
         $this->repository = $repository;
         $this->filesystem = $filesystem;
-        $this->config = $config;
     }
 
     public function locateFromGitRepository(): FilesCollection
@@ -73,11 +67,10 @@ class ChangedFiles
     {
         $fileName = $file->isRename() ? $file->getNewName() : $file->getName();
 
-        $projectPath = rtrim(
-            $this->filesystem->makePathRelative(getcwd(), realpath($this->config->getGitDir())),
-        './'
+        $fileName = $this->makeFileRelativeToProjectDir(
+            $fileName,
+            $this->filesystem->getRelativeProjectDir()
         );
-
 
         $fileName = preg_replace('#^('.preg_quote($projectPath, '#').')#', '', $fileName);
 

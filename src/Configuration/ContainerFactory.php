@@ -41,6 +41,7 @@ final class ContainerFactory
         if ($filesystem->exists($path)) {
             $loader->load($path);
         }
+        $container->setParameter('config_file', $path);
 
         // Compile configuration to make sure that tasks are added to the taskrunner
         $container->compile();
