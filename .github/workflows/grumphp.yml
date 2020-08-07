@@ -20,6 +20,8 @@ jobs:
                   php-version: ${{ matrix.php-versions }}
                   tools: pecl
                   extensions: parallel, xdebug, mbstring
+              env:
+                phpts: ts
             - name: Check PHP Version
               run: php -v
             - name: Get composer cache directory
