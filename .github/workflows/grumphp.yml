@@ -9,7 +9,7 @@ jobs:
                 operating-system: [ubuntu-latest, macos-latest, windows-latest]
                 php-versions: ['7.3', '7.4']
                 composer-options: ['', '--prefer-lowest']
-                composer-versions: ['composer-1.10.10', 'composer-2.0.0-alpha3']
+                composer-versions: ['composer:v1', 'composer:v2']
             fail-fast: false
         name: PHP ${{ matrix.php-versions }} @ ${{ matrix.operating-system }} with ${{ matrix.composer-versions }} ${{ matrix.composer-options }}
         steps:
@@ -19,10 +19,10 @@ jobs:
               uses: shivammathur/setup-php@master
               with:
                   php-version: ${{ matrix.php-versions }}
-                  tools: ${{ matrix.composer-versions }}, pecl
-                  extensions: parallel, xdebug, mbstring
+                  tools: ${{ matrix.composer-versions }}
+                  extensions: xdebug, mbstring
               env:
-                phpts: ts
+                phpts: ts # Windows requires ZTS in order to run AMP.
             - name: Check PHP Version
               run: php -v
             - name: Check PHP info
