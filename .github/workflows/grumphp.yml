@@ -11,7 +11,7 @@ jobs:
                 composer-options: ['', '--prefer-lowest']
                 composer-versions: ['composer-1.10.10', 'composer-2.0.0-alpha3']
             fail-fast: false
-        name: PHP ${{ matrix.php-versions }} @ ${{ matrix.operating-system }} ${{ matrix.composer-options }}
+        name: PHP ${{ matrix.php-versions }} @ ${{ matrix.operating-system }} with ${{ matrix.composer-versions }} ${{ matrix.composer-options }}
         steps:
             - name: Checkout
               uses: actions/checkout@master
