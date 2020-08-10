@@ -20,7 +20,7 @@ jobs:
               with:
                   php-version: ${{ matrix.php-versions }}
                   tools: ${{ matrix.composer-versions }}
-                  extensions: xdebug, mbstring
+                  extensions: xdebug, mbstring, pcntl
               env:
                 phpts: ts # Windows requires ZTS in order to run AMP.
             - name: Check Versions
