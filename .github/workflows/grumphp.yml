@@ -26,6 +26,7 @@ jobs:
             - name: Check Versions
               run: |
                 php -v
+                php -m
                 composer --version
             - name: Get composer cache directory
               id: composercache
